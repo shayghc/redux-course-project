@@ -12,9 +12,14 @@ function createStore () {
 
     const subscribe = (listener) => {
         listeners.push(listener)
+        // Remove listener from the array after the listener function has been invoked
+        return () => {
+            listener = listeners.filter((l) => l !== listener)
+        }
     }
 
     return {
-        getState
+        getState,
+        subscribe
     }
 }
