@@ -30,12 +30,27 @@
     id: 0
 }
 
-function createStore () {
+/*
+    Characteristics of a pure function
+    1. They always return the same result if the same arguments are passed in.
+    2. They depend only upon the arguments passed into them.
+    3. The never produce any side-effects.
+*/
+// Reducer function
+function todos(state = [], action) {
+    if(action.type === 'ADD_TODO') {
+        return state.concat([action.todo])
+    }
+
+    return state
+}
+
+function createStore (reducer) {
     // The store should have four parts:
     // 1. The state
-    // 2. Get the state
-    // 3. Listen to the state
-    // 4. Update the state
+    // 2. Get the state - getState
+    // 3. Listen to the state - subscribe
+    // 4. Update the state - dispatch
 
     let state
     let listeners = []
@@ -50,8 +65,26 @@ function createStore () {
         }
     }
 
+    const dispatch = (action) => {
+        state = reducer(state, action)
+        listeners.forEach((listener) => listener())
+    }
+
     return {
         getState,
-        subscribe
+        subscribe,
+        dispatch
     }
 }
+
+const store = createStore(todos)
+
+// This function will "dispatch an action"
+store.dispatch({
+    type: 'ADD_TODO',
+    todo: {
+        id: 0,
+        name: 'Learn Redux',
+        complete: false
+    }
+})
