@@ -8,11 +8,13 @@
         <h1>Todos</h1>
         <input id='todo' type='text' placeholder='Add Todo'>
         <button id='todoBtn' >Add todo</button>
+        <ul id='todos'></ul>
     </div>
     <div>
         <h1>Goals</h1>
         <input id='goal' type='text' placeholder='Add Goal'>
         <button id='goalBtn' >Add goal</button>
+        <ul id='goals'></ul>
     </div>
     
     <script>
@@ -138,11 +140,35 @@
         }
 
 
-        const store = createStore(app)
+        const store = createStore(app);
 
         store.subscribe(() => {
-            console.log('The new state is: ', store.getState())
+            const { goals, todos } = store.getState()
+
+            document.getElementById('goals').innerHTML = ''
+            document.getElementById('todos').innerHTML = ''
+
+            goals.forEach(addGoalToDOM)
+            todos.forEach(addTodoToDOM)
         })
+
+        function addTodoToDOM(todo) {
+            const node = document.createElement('li')
+            const text = document.createTextNode(todo.name)
+            node.appendChild(text)
+
+            document.getElementById('todos')
+                .appendChild(node)
+        }
+
+        function addGoalToDOM (goal) {
+            const node = document.createElement('li')
+            const text = document.createTextNode(goal.name)
+            node.appendChild(text)
+
+            document.getElementById('goals')
+                .appendChild(node)
+        }
 
         // // These functions will 'dispatch an action'
         // store.dispatch(addTodoAction({
