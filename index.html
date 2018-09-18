@@ -70,7 +70,8 @@
         const ADD_GOAL = 'ADD_GOAL';
         const REMOVE_GOAL = 'REMOVE_GOAL';
 
-        // Action creators
+        // Action creators - object representations of different events
+        // These events can change the state held in our store.
         function addTodoAction(todo) {
             return {
                 type: ADD_TODO,
@@ -140,6 +141,7 @@
         //     }
         // }
 
+        // Combines the two reducer functions into a single reducer
         const store = Redux.createStore(Redux.combineReducers({
             todos,
             goals,
