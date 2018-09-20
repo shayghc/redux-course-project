@@ -75,6 +75,7 @@
         const TOGGLE_TODO = 'TOGGLE_TODO';
         const ADD_GOAL = 'ADD_GOAL';
         const REMOVE_GOAL = 'REMOVE_GOAL';
+        const RECEIVE_DATA = 'RECEIVE_DATA';
 
         // Action creators - object representations of different events
         // These events can change the state held in our store.
@@ -113,6 +114,14 @@
             }
         }
 
+        function receiveDataAction(todos, goals) {
+            return {
+                type: RECEIVE_DATA,
+                todos,
+                goals
+            }
+        }
+
         // Middleware functions
         const checker = (store) => (next) => (action) => {
             if (
@@ -144,14 +153,16 @@
         // Reducer function - for TODOS
         function todos(state = [], action) {
             switch(action.type) {
-                case ADD_TODO:
+                case ADD_TODO :
                     return state.concat([action.todo])
-                case REMOVE_TODO:
+                case REMOVE_TODO :
                     return state.filter((todo) => todo.id !== action.id)
-                case TOGGLE_TODO:
+                case TOGGLE_TODO :
                     return state.map((todo) => todo.id !== action.id ? todo :
                     Object.assign({}, todo, {complete: !todo.complete}))
-                default:
+                case RECEIVE_DATA :
+                    return action.todos;
+                default :
                     return state
             }
         }
@@ -163,6 +174,8 @@
                     return state.concat([action.goal]);
                 case REMOVE_GOAL:
                     return state.filter((goal) => goal.id !== action.id);
+                case RECEIVE_DATA :
+                    return action.goals
                 default:
                     return state;
             }
@@ -358,7 +371,6 @@
             }
         }
 
-
         class App extends React.Component {
             componentDidMount() {
                 const { store } = this.props
@@ -367,8 +379,7 @@
                     API.fetchTodos(),
                     API.fetchGoals()
                 ]).then(([ todos, goals ]) => {
-                    console.log('Todos: ', todos)
-                    console.log('Goals: ', goals)
+                    store.dispatch(receiveDataAction(todos, goals))
                 })
 
                 // forceUpdate is used to cause a re-render as we have no state in React to trigger the update on state change
