@@ -269,6 +269,7 @@
                             <span>
                                 {item.name}
                             </span>
+                            <button onClick={() => props.remove(item)}>&times;</button>
                         </li>
                     ))}
                 </ul>
@@ -288,6 +289,10 @@
                 }))
             }
 
+            removeItem = (todo) => {
+                this.props.store.dispatch(removeTodoAction(todo.id))
+            }
+
             render() {
                 return (
                     <div>
@@ -301,6 +306,7 @@
 
                         <List 
                             items={this.props.todos}
+                            remove={this.removeItem}
                         />
                     </div>
                 )
@@ -319,6 +325,10 @@
                 }))
             }
 
+            removeItem = (goal) => {
+                this.props.store.dispatch(removeGoalAction(goal.id))
+            }
+
             render() {
                 return (
                     <div>
@@ -332,6 +342,7 @@
 
                         <List
                             items={this.props.goals}
+                            remove={this.removeItem}
                         />
                     </div>
                 )
@@ -340,6 +351,12 @@
 
 
         class App extends React.Component {
+            componentDidMount() {
+                const { store } = this.props
+                // forceUpdate is used to cause a re-render as we have no state in React to trigger the update on state change
+                store.subscribe(() => this.forceUpdate())
+            }
+
             render() {
                 const { store } = this.props
                 const { todos, goals } = store.getState()
