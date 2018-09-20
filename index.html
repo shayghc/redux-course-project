@@ -261,33 +261,78 @@
             .addEventListener('click', addGoal)
     </script>
     <script type="text/babel">
-        function list(props) {
+        function List(props) {
             return (
                 <ul>
-                    <li>LIST</li>
+                    {props.items.map((item) => (
+                        <li key={item.id}>
+                            <span>
+                                {item.name}
+                            </span>
+                        </li>
+                    ))}
                 </ul>
             )
         }
 
         class Todos extends React.Component {
+            addItem = (event) => {
+                event.preventDefault()
+                const name = this.input.value
+                this.input.value = ''
+
+                this.props.store.dispatch(addTodoAction({
+                    id: generateId(),
+                    name,
+                    complete: false
+                }))
+            }
+
             render() {
                 return (
                     <div>
-                        TODOS
+                        <h1>Todo List</h1>
+                        <input
+                            type='text'
+                            placeholder='Add Todo'
+                            ref={(input) => this.input = input}
+                        />
+                        <button onClick={this.addItem}>Add Todo</button>
 
-                        <List />
+                        <List 
+                            items={this.props.todos}
+                        />
                     </div>
                 )
             }
         }
 
         class Goals extends React.Component {
+            addItem = (event) => {
+                event.preventDefault()
+                const name = this.input.value
+                this.input.value = ''
+
+                this.props.store.dispatch(addGoalAction({
+                    id: generateId(),
+                    name
+                }))
+            }
+
             render() {
                 return (
                     <div>
-                        GOALS
+                        <h1>Goals</h1>
+                        <input
+                            type='text'
+                            placeholder='Add Goal'
+                            ref={(input) => this.input = input}
+                        />
+                        <button onClick={this.addItem}>Add Goal</button>
 
-                        <List />
+                        <List
+                            items={this.props.goals}
+                        />
                     </div>
                 )
             }
@@ -296,14 +341,19 @@
 
         class App extends React.Component {
             render() {
+                const { store } = this.props
+                const { todos, goals } = store.getState()
                 return (
-                    <div>REACT APP</div>
+                    <div>
+                        <Todos todos={todos} store={store} />
+                        <Goals goals={goals} store={store} />
+                    </div>
                 )
             }
         }
 
         ReactDOM.render(
-            <App />,
+            <App store={store} />,
             document.getElementById('app')
         )
     </script>
