@@ -122,6 +122,17 @@
             }
         }
 
+        function handleDeleteTodo (todo) {
+            return (dispatch) => {
+                dispatch(removeTodoAction(todo.id))
+                return API.deleteTodo(todo.id)
+                    .catch(() => {
+                        dispatch(addTodoAction(todo))
+                        alert('An error occurred')
+                    })
+            }
+        }
+
         // Middleware functions
         const checker = (store) => (next) => (action) => {
             if (
@@ -148,6 +159,14 @@
             const result = next(action)
             console.log('The new state: ', store.getState())
             console.groupEnd()
+        }
+
+        const thunk = (store) => (next) => (action) => {
+            if ( typeof action === 'function') {
+                return action(store.dispatch)
+            }
+
+            return next(action)
         }
 
         // Reducer function - for TODOS
@@ -202,7 +221,7 @@
             todos,
             goals,
             loading,
-        }), Redux.applyMiddleware(checker, logger));
+        }), Redux.applyMiddleware(thunk, checker, logger));
 
         // store.subscribe(() => {
         //     const { goals, todos } = store.getState()
@@ -316,12 +335,7 @@
             }
 
             removeItem = (todo) => {
-                this.props.store.dispatch(removeTodoAction(todo.id))
-                return API.deleteTodo(todo.id)
-                    .catch(() => {
-                        this.props.store.dispatch(addTodoAction(todo))
-                        alert('An error occurred')
-                    })
+                this.props.store.dispatch(handleDeleteTodo(todo))
             }
 
             toggleItem = (id) => {
